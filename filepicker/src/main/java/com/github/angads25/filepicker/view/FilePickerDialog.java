@@ -119,6 +119,8 @@ public class FilePickerDialog extends Dialog implements AdapterView.OnItemClickL
         if (negativeBtnNameStr != null) {
             cancel.setText(negativeBtnNameStr);
         }
+        Button delete = (Button) findViewById(R.id.delete);
+
         select.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -139,6 +141,23 @@ public class FilePickerDialog extends Dialog implements AdapterView.OnItemClickL
                 cancel();
             }
         });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*  Delete Button is clicked. Get the array of all selected items
+                 *  from MarkedItemList singleton.
+                 */
+                String paths[] = MarkedItemList.getSelectedPaths();
+                //NullPointerException fixed in v1.0.2
+                if (callbacks != null) {
+                    callbacks.onSelectedFilePaths(paths);
+                }
+                dismiss();
+            }
+        });
+
+
         mFileListAdapter = new FileListAdapter(internalList, context, properties);
         mFileListAdapter.setNotifyItemCheckedListener(new NotifyItemChecked() {
             @Override
@@ -409,11 +428,11 @@ public class FilePickerDialog extends Dialog implements AdapterView.OnItemClickL
 
     @Override
     public void show() {
-        if (!Utility.checkStorageAccessPermissions(context)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                ((Activity) context).requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, EXTERNAL_READ_PERMISSION_GRANT);
-            }
-        } else {
+       // if (!Utility.checkStorageAccessPermissions(context)) {
+        //    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        //        ((Activity) context).requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, EXTERNAL_READ_PERMISSION_GRANT);
+        //    }
+        //} else {
             super.show();
             positiveBtnNameStr = positiveBtnNameStr == null ?
                     context.getResources().getString(R.string.choose_button_label) : positiveBtnNameStr;
@@ -425,7 +444,7 @@ public class FilePickerDialog extends Dialog implements AdapterView.OnItemClickL
                 String button_label = positiveBtnNameStr + " (" + size + ") ";
                 select.setText(button_label);
             }
-        }
+        //}
     }
 
     @Override
